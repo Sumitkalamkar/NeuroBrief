@@ -1,5 +1,5 @@
 streamlit==1.32.2
-transformers==4.38.2
-torch==2.2.1
+transformers==4.37.2
+torch==2.1.2
 sentencepiece==0.1.99
-PyMuPDF==1.23.26
+PyMuPDF==1.22.5
