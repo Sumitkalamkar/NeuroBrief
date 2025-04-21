@@ -1,0 +1,5 @@
+streamlit==1.32.2
+transformers==4.38.2
+torch==2.2.1
+sentencepiece==0.1.99
+PyMuPDF==1.23.26
