@@ -35,6 +35,12 @@ def summarize_with_led(text, tokenizer, model, min_length, max_length):
 
     return tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
+# Topic filtering function
+def extract_relevant_text(text, topic):
+    sentences = text.split(".")
+    filtered = [s.strip() for s in sentences if topic.lower() in s.lower()]
+    return ". ".join(filtered) + "." if filtered else text  # fallback to full text
+
 # App title
 st.title("🧠 NeuroBrief")
 
@@ -65,6 +71,9 @@ if uploaded_file is not None:
 else:
     user_text = st.text_area("Or enter text manually:", height=250)
 
+# Topic input
+topic_query = st.text_input("Enter a topic or keyword for focused summarization (optional):")
+
 # Summary length sliders
 min_length = st.slider("Minimum summary length", min_value=10, max_value=200, value=30)
 max_length = st.slider("Maximum summary length", min_value=50, max_value=300, value=130)
@@ -77,17 +86,21 @@ if st.button("Generate Summary"):
         st.error("Minimum length should be less than or equal to maximum length.")
     else:
         with st.spinner("Summarizing..."):
+            input_text = user_text
+            if topic_query.strip():
+                input_text = extract_relevant_text(user_text, topic_query.strip())
+
             if "facebook" in model_choice:
                 model = load_summarizer("facebook/bart-large-cnn")
-                summary = model(user_text, min_length=min_length, max_length=max_length, do_sample=False)[0]['summary_text']
+                summary = model(input_text, min_length=min_length, max_length=max_length, do_sample=False)[0]['summary_text']
 
             elif "mT5" in model_choice:
                 model = load_summarizer("csebuetnlp/mT5_multilingual_XLSum")
-                summary = model(user_text, min_length=min_length, max_length=max_length, do_sample=False)[0]['summary_text']
+                summary = model(input_text, min_length=min_length, max_length=max_length, do_sample=False)[0]['summary_text']
 
             elif "Longformer" in model_choice:
                 resources = load_summarizer("allenai/led-base-16384")
-                summary = summarize_with_led(user_text, resources["tokenizer"], resources["model"], min_length, max_length)
+                summary = summarize_with_led(input_text, resources["tokenizer"], resources["model"], min_length, max_length)
 
             else:
                 summary = "Model not recognized."
