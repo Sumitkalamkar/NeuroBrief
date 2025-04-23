@@ -1,5 +1,6 @@
 import streamlit as st
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import torch
 import fitz  # PyMuPDF for PDF reading
 
